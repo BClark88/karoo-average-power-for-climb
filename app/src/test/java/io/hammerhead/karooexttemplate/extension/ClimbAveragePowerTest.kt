@@ -25,17 +25,17 @@ class ClimbAveragePowerTest : DescribeSpec({
 
     fun noSignal(): StreamState = StreamState.NotAvailable
 
-    describe("nextClimbPower") {
+    describe("accumulate") {
         context("when not on a climb") {
             it("forwards the ride average power and leaves the accumulator resting") {
-                val (acc, climb) = nextClimbPower(rest, noSignal(), noSignal(), power(220.0))
+                val (acc, climb) = accumulate(rest, noSignal(), noSignal(), power(220.0))
                 climb.onClimb shouldBe false
                 climb.watts shouldBe 220.0
                 acc shouldBe rest
             }
 
             it("reports no watts when the ride average is not streaming") {
-                val (_, climb) = nextClimbPower(rest, noSignal(), noSignal(), noSignal())
+                val (_, climb) = accumulate(rest, noSignal(), noSignal(), noSignal())
                 climb.onClimb shouldBe false
                 climb.watts shouldBe null
             }
@@ -43,7 +43,7 @@ class ClimbAveragePowerTest : DescribeSpec({
 
         context("when a climb begins") {
             it("opens the accumulator with the first power sample") {
-                val (acc, climb) = nextClimbPower(rest, power(250.0), climbAt(0.0), noSignal())
+                val (acc, climb) = accumulate(rest, power(250.0), climbAt(0.0), noSignal())
                 climb.onClimb shouldBe true
                 climb.watts shouldBe 250.0
                 acc shouldBe Accumulator(
@@ -55,7 +55,7 @@ class ClimbAveragePowerTest : DescribeSpec({
             }
 
             it("opens the accumulator even when the power meter has no signal yet") {
-                val (acc, climb) = nextClimbPower(rest, noSignal(), climbAt(0.0), noSignal())
+                val (acc, climb) = accumulate(rest, noSignal(), climbAt(0.0), noSignal())
                 climb.onClimb shouldBe true
                 climb.watts shouldBe null
                 acc.samplesTaken shouldBe 0
@@ -65,7 +65,7 @@ class ClimbAveragePowerTest : DescribeSpec({
 
         context("mid-climb") {
             it("averages every power sample since the climb began") {
-                val (acc, climb) = nextClimbPower(midClimb, power(400.0), climbAt(4000.0), power(190.0))
+                val (acc, climb) = accumulate(midClimb, power(400.0), climbAt(4000.0), power(190.0))
                 climb.onClimb shouldBe true
                 climb.watts shouldBe 300.0
                 acc.samplesTaken shouldBe 3
@@ -73,7 +73,7 @@ class ClimbAveragePowerTest : DescribeSpec({
             }
 
             it("ignores samples during a power signal gap") {
-                val (acc, climb) = nextClimbPower(midClimb, noSignal(), climbAt(4000.0), power(190.0))
+                val (acc, climb) = accumulate(midClimb, noSignal(), climbAt(4000.0), power(190.0))
                 climb.onClimb shouldBe true
                 climb.watts shouldBe 250.0
                 acc.samplesTaken shouldBe 2
@@ -81,7 +81,7 @@ class ClimbAveragePowerTest : DescribeSpec({
             }
 
             it("keeps climbing while the distance from the bottom increases") {
-                val (acc, climb) = nextClimbPower(midClimb, power(400.0), climbAt(4000.0), noSignal())
+                val (acc, climb) = accumulate(midClimb, power(400.0), climbAt(4000.0), noSignal())
                 climb.onClimb shouldBe true
                 acc.lastDistanceFromBottom shouldBe 4000.0
             }
@@ -89,7 +89,7 @@ class ClimbAveragePowerTest : DescribeSpec({
 
         context("when DISTANCE_FROM_BOTTOM drops") {
             it("starts a fresh accumulator for the new climb") {
-                val (acc, climb) = nextClimbPower(midClimb, power(400.0), climbAt(40.0), noSignal())
+                val (acc, climb) = accumulate(midClimb, power(400.0), climbAt(40.0), noSignal())
                 climb.onClimb shouldBe true
                 climb.watts shouldBe 400.0
                 acc shouldBe Accumulator(
@@ -112,7 +112,8 @@ class ClimbAveragePowerTest : DescribeSpec({
         }
 
         it("emits NotAvailable when watts are missing") {
-            val state = ClimbPower(onClimb = false, watts = null).toStreamState("average-power-for-climb:climb-avg-power")
+            val state =
+                ClimbPower(onClimb = false, watts = null).toStreamState("average-power-for-climb:climb-avg-power")
             state shouldBe StreamState.NotAvailable
         }
     }

@@ -24,7 +24,7 @@ data class ClimbPower(
 /**
  * Running state used to accumulate climb-average power across stream events.
  *
- * Not part of the extension's public interface; it is public only because [nextClimbPower]
+ * Not part of the extension's public interface; it is public only because [accumulate]
  * takes it as a parameter.
  *
  * @property onClimb whether the most recent event processed was on a climb
@@ -56,12 +56,12 @@ fun KarooSystemService.climbAveragePowerFlow(): Flow<ClimbPower> {
         streamDataFlow(DataType.Type.AVERAGE_POWER),
     ) { power, climb, rideAvg -> Triple(power, climb, rideAvg) }
         .scan(Accumulator() to ClimbPower(onClimb = false, watts = null)) { (acc, _), (power, climb, rideAvg) ->
-            nextClimbPower(acc, power, climb, rideAvg)
+            accumulate(acc, power, climb, rideAvg)
         }
         .map { it.second }
 }
 
-internal fun nextClimbPower(
+internal fun accumulate(
     acc: Accumulator,
     power: StreamState,
     climb: StreamState,
