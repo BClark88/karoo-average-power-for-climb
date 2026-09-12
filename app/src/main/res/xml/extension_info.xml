@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionInfo
+    displayName="@string/extension_name"
+    icon="@drawable/ic_launcher_foreground"
+    id="average-power-for-climb"
+    scansDevices="false">
+    <DataType
+        description="@string/climb_avg_power_description"
+        displayName="@string/climb_avg_power"
+        graphical="false"
+        icon="@drawable/ic_climb"
+        typeId="climb-avg-power" />
+</ExtensionInfo>
