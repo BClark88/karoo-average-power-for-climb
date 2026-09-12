@@ -9,11 +9,29 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 
+/**
+ * The current state of climb-average power.
+ *
+ * @property onClimb whether the rider is currently on a climb
+ * @property watts average watts for the current climb, or the ride-average watts while not
+ *   climbing; `null` when no power data is available
+ */
 data class ClimbPower(
     val onClimb: Boolean,
     val watts: Double?,
 )
 
+/**
+ * Running state used to accumulate climb-average power across stream events.
+ *
+ * Not part of the extension's public interface; it is public only because [nextClimbPower]
+ * takes it as a parameter.
+ *
+ * @property onClimb whether the most recent event processed was on a climb
+ * @property lastDistanceFromBottom distance-from-bottom (m) of the last processed climb sample
+ * @property totalWattsForClimb sum of watt values collected for the current climb
+ * @property samplesTaken number of power samples collected for the current climb
+ */
 data class Accumulator(
     val onClimb: Boolean = false,
     val lastDistanceFromBottom: Double? = null,
@@ -21,6 +39,16 @@ data class Accumulator(
     val samplesTaken: Int = 0,
 )
 
+/**
+ * Emits [ClimbPower] for each combined POWER, CLIMB, and AVERAGE_POWER stream event.
+ *
+ * While climbing, watts is the running average for the current climb, resetting whenever a
+ * new climb is detected (distance-from-bottom resets). While not climbing, watts is the
+ * ride-average power.
+ *
+ * @receiver the Karoo system service providing the underlying data streams
+ * @return a cold flow of climb-average power updates
+ */
 fun KarooSystemService.climbAveragePowerFlow(): Flow<ClimbPower> {
     return combine(
         streamDataFlow(DataType.Type.POWER),
@@ -77,6 +105,12 @@ private fun startsNewClimb(acc: Accumulator, distance: Double?): Boolean {
     return current < previous
 }
 
+/**
+ * Converts this climb-power value into a [StreamState] ready for the emitter.
+ *
+ * @param dataTypeId the data type id to attach to the streaming data point
+ * @return [StreamState.Streaming] when watts are available, otherwise [StreamState.NotAvailable]
+ */
 fun ClimbPower.toStreamState(dataTypeId: String): StreamState {
     val value = watts ?: return StreamState.NotAvailable
     return StreamState.Streaming(DataPoint(dataTypeId, mapOf(DataType.Field.SINGLE to value)))
