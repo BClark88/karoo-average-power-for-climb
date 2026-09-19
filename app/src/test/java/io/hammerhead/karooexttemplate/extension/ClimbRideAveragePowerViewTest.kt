@@ -35,7 +35,7 @@ class ClimbRideAveragePowerViewTest : DescribeSpec({
         }
 
         it("shrinks the value to fit a short field") {
-            fittedValueSizeSp(textSize = 48, fieldHeightDp = 60f) shouldBe 34
+            fittedValueSizeSp(textSize = 48, fieldHeightDp = 60f) shouldBe 29
         }
 
         it("never returns a size below one point") {

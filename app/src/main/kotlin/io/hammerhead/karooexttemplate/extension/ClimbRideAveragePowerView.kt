@@ -28,6 +28,11 @@ import kotlin.math.roundToInt
 private const val LABEL_SCALE = 0.33f
 
 /**
+ * Padding (dp) above the label, separating it from the field's top edge.
+ */
+private const val LABEL_TOP_PADDING_DP = 6f
+
+/**
  * Multiplier between a font size and its rendered line height.
  */
 private const val LINE_HEIGHT_FACTOR = 1.2f
@@ -75,7 +80,7 @@ fun wattsLabel(watts: Double?, preview: Boolean = false): String =
  * @return the value font size in sp, never larger than [textSize]
  */
 internal fun fittedValueSizeSp(textSize: Int, fieldHeightDp: Float): Int {
-    val labelHeightDp = textSize * LABEL_SCALE * LINE_HEIGHT_FACTOR
+    val labelHeightDp = LABEL_TOP_PADDING_DP + textSize * LABEL_SCALE * LINE_HEIGHT_FACTOR
     val fitted = ((fieldHeightDp - labelHeightDp) / LINE_HEIGHT_FACTOR).toInt()
     return fitted.coerceIn(1, textSize)
 }
@@ -123,16 +128,16 @@ fun ClimbRideAveragePowerView(
         ) {
             Text(
                 text = labelFor(power.onClimb),
-                modifier = GlanceModifier.fillMaxWidth(),
+                modifier = GlanceModifier.fillMaxWidth().padding(top = LABEL_TOP_PADDING_DP.dp),
                 maxLines = 1,
                 style = TextStyle(
                     color = ColorProvider(Color.Black),
-                    fontSize = (textSize * 0.33f).sp,
+                    fontSize = (textSize * LABEL_SCALE).sp,
                     textAlign = textAlign,
                 ),
             )
             Box(
-                modifier = GlanceModifier.fillMaxWidth().defaultWeight().padding(bottom = 2.dp),
+                modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
                 contentAlignment = when (alignment) {
                     ViewConfig.Alignment.LEFT -> Alignment.BottomStart
                     ViewConfig.Alignment.CENTER -> Alignment.BottomCenter
