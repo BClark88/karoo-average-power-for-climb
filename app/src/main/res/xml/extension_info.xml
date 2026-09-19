@@ -10,4 +10,10 @@
         graphical="false"
         icon="@drawable/ic_climb"
         typeId="climb-avg-power" />
+    <DataType
+        description="@string/climb_ride_avg_power_description"
+        displayName="@string/climb_ride_avg_power"
+        graphical="true"
+        icon="@drawable/ic_climb"
+        typeId="climb-ride-avg-power" />
 </ExtensionInfo>

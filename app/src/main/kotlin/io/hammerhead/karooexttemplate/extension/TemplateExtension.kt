@@ -7,7 +7,10 @@ class TemplateExtension : KarooExtension("average-power-for-climb", "1.0") {
     private val karooSystem by lazy { KarooSystemService(this) }
 
     override val types by lazy {
-        listOf(ClimbAveragePowerDataType(karooSystem, extension))
+        listOf(
+            ClimbAveragePowerDataType(karooSystem, extension),
+            ClimbRideAveragePowerDataType(karooSystem, extension),
+        )
     }
 
     override fun onCreate() {
