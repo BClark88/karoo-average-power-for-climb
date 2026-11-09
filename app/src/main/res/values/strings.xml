@@ -1,9 +1,6 @@
 <resources>
     <string name="app_name">Average Power for Climb</string>
     <string name="extension_name">Average Power for Climb</string>
-    <string name="hello_karoo">Hello Karoo!</string>
-    <string name="climb_avg_power">Avg Power (Climb)</string>
-    <string name="climb_avg_power_description">Average power for the current climb. Shows ride average power when not climbing.</string>
-    <string name="climb_ride_avg_power">Avg Power (Climb/Ride)</string>
-    <string name="climb_ride_avg_power_description">Ride average power. Shows climb average power with a matching label while climbing.</string>
+    <string name="climb_average_power">Avg Climb Power</string>
+    <string name="climb_average_power_description">Average power for the current climb. Reports no value when not climbing.</string>
 </resources>

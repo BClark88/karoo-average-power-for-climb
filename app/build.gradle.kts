@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -18,7 +17,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -29,9 +29,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
     testOptions {
         unitTests.all {
             it.useJUnitPlatform()
@@ -41,12 +38,7 @@ android {
 
 dependencies {
     implementation(libs.hammerhead.karoo.ext)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.bundles.androidx.lifeycle)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.bundles.compose.ui)
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.preview)
+    implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
 }

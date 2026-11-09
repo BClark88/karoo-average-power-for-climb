@@ -9,10 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Extension data type that exposes `climb-avg-power` to the Karoo system.
+ * Extension data type that exposes `climb-average-power` to the Karoo system.
  *
- * Streams climb-average power derived from the POWER, CLIMB, and AVERAGE_POWER system data
- * types provided by [karooSystem].
+ * Streams the running average power for the current climb, derived from the POWER, CLIMB, and
+ * AVERAGE_POWER system data types provided by [karooSystem]. Reports no data whenever the rider
+ * is not on a climb.
  *
  * @param karooSystem the Karoo system service used to observe the underlying data streams
  * @param extension the extension id, passed through to the [DataTypeImpl] base class
@@ -20,10 +21,10 @@ import kotlinx.coroutines.launch
 class ClimbAveragePowerDataType(
     private val karooSystem: KarooSystemService,
     extension: String,
-) : DataTypeImpl(extension, "climb-avg-power") {
+) : DataTypeImpl(extension, "climb-average-power") {
 
     /**
-     * Starts emitting climb-average power to the provided emitter.
+     * Starts emitting the running average power for the current climb to the provided emitter.
      *
      * The collection job is cancelled via the emitter's cancellable hook when streaming stops.
      *

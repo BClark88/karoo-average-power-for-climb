@@ -5,15 +5,9 @@
     id="average-power-for-climb"
     scansDevices="false">
     <DataType
-        description="@string/climb_avg_power_description"
-        displayName="@string/climb_avg_power"
+        description="@string/climb_average_power_description"
+        displayName="@string/climb_average_power"
         graphical="false"
         icon="@drawable/ic_climb"
-        typeId="climb-avg-power" />
-    <DataType
-        description="@string/climb_ride_avg_power_description"
-        displayName="@string/climb_ride_avg_power"
-        graphical="true"
-        icon="@drawable/ic_climb"
-        typeId="climb-ride-avg-power" />
+        typeId="climb-average-power" />
 </ExtensionInfo>

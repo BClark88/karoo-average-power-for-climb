@@ -103,17 +103,22 @@ class ClimbAveragePowerTest : DescribeSpec({
     }
 
     describe("toStreamState") {
-        it("emits a streaming data point with FIELD_SINGLE when watts are present") {
-            val dataTypeId = "average-power-for-climb:climb-avg-power"
-            val state = ClimbPower(onClimb = true, watts = 250.0).toStreamState(dataTypeId)
+        val dataTypeId = "average-power-for-climb:climb-average-power"
+
+        it("emits the running climb average while climbing") {
+            val state = ClimbPower(onClimb = true, watts = 300.0).toStreamState(dataTypeId)
             state shouldBe StreamState.Streaming(
-                DataPoint(dataTypeId, mapOf(DataType.Field.SINGLE to 250.0)),
+                DataPoint(dataTypeId, mapOf(DataType.Field.SINGLE to 300.0)),
             )
         }
 
-        it("emits NotAvailable when watts are missing") {
-            val state =
-                ClimbPower(onClimb = false, watts = null).toStreamState("average-power-for-climb:climb-avg-power")
+        it("reports no value when not climbing") {
+            val state = ClimbPower(onClimb = false, watts = 220.0).toStreamState(dataTypeId)
+            state shouldBe StreamState.NotAvailable
+        }
+
+        it("reports no value while climbing without watts") {
+            val state = ClimbPower(onClimb = true, watts = null).toStreamState(dataTypeId)
             state shouldBe StreamState.NotAvailable
         }
     }

@@ -106,12 +106,16 @@ private fun startsNewClimb(acc: Accumulator, distance: Double?): Boolean {
 }
 
 /**
- * Converts this climb-power value into a [StreamState] ready for the emitter.
+ * Converts this climb-power value into a [StreamState] for the average-power-for-climb field.
+ *
+ * Streams the running climb average while climbing, and [StreamState.NotAvailable] at every other
+ * time, so no value is reported while off the climb.
  *
  * @param dataTypeId the data type id to attach to the streaming data point
- * @return [StreamState.Streaming] when watts are available, otherwise [StreamState.NotAvailable]
+ * @return [StreamState.Streaming] while climbing with watts available, otherwise [StreamState.NotAvailable]
  */
 fun ClimbPower.toStreamState(dataTypeId: String): StreamState {
+    if (!onClimb) return StreamState.NotAvailable
     val value = watts ?: return StreamState.NotAvailable
     return StreamState.Streaming(DataPoint(dataTypeId, mapOf(DataType.Field.SINGLE to value)))
 }
